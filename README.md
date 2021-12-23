@@ -7,6 +7,18 @@ needed.
 
 Currently, **Counters**, **Timers**, **Gauges**, and **DistributionSummaries** are supported.
 
+## Maven
+
+```xml
+<dependencies>
+  <dependency>
+    <groupId>com.avpines</groupId>
+    <artifactId>dynamic-actuator-meters</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+  </dependency>
+</dependencies>
+```
+
 ## Example usage
 
 Create a new dynamic counter with tag keys "t1" and "t2":
@@ -56,4 +68,37 @@ dg.getOrCreate(
     list, 
     l -> l.stream().filter(s -> s.length() >= 1 && s.length() <= 10, 
     "min-1", "max-10");
+```
+
+You can use `get` instead of `getOrCreate` to get the gauge only if it exists. This way you don't
+have to give the object and function each time:
+
+```java
+DynamicGauge<Set<Double>> dg = DynamicGauge
+    .builder(smr, "hello", new OfType<Set<Double>>() {})
+    .tagKey("t1")
+    .build();
+
+// create a gauge
+Gauge g = dg.getOrCreate(set, s -> s.stream().filter(d -> d > 10.0).count(), "hello");
+
+Optional<Gauge> another1 = dg.get("hello"); // exists
+Optional<Gauge> another2 = dg.get("world"); // empty, gauge was not previosuly created.
+```
+
+To levarage Gauge's special `Supplier<Number>` implementation (see 
+`Gauge#builder(String name, Supplier<Number> f)`), you can use the `SupplierDynamicGauge`:
+
+```java
+AtomicInteger ai = new AtomicInteger();
+
+SupplierDynamicGauge dg = DynamicGauge.builder(smr, "my.metric").tagKeys("hello").build();
+dg.getOrCreate(ai::get, "add-1"); 
+
+ai.set(10);
+
+List<Meter> meters = smr.getMeters();
+assertThat(meters)
+    .filteredOn(Conditions.onTags(Tag.of("hello", "add-1"))).hasSize(1)
+    .map(m -> ((Gauge) m).value()).containsExactly(10.0);
 ```

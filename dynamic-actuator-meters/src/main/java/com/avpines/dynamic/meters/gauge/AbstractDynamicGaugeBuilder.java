@@ -1,6 +1,7 @@
 package com.avpines.dynamic.meters.gauge;
 
 import com.avpines.dynamic.meters.OfType;
+import com.avpines.dynamic.meters.distributionsummary.DynamicDistributionSummary;
 import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.Gauge.Builder;
 import io.micrometer.core.instrument.MeterRegistry;
@@ -14,6 +15,12 @@ import java.util.function.UnaryOperator;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * Common parent class for all Gauge builders.
+ *
+ * @param <E> The Guage type that this builder will build.
+ * @param <A> The builder type (For Builder pattern inheritance).
+ */
 public abstract class AbstractDynamicGaugeBuilder<E, A extends AbstractDynamicGaugeBuilder<E, A>> {
 
   MeterRegistry registry;
@@ -21,11 +28,24 @@ public abstract class AbstractDynamicGaugeBuilder<E, A extends AbstractDynamicGa
   Collection<UnaryOperator<Builder<E>>> customizers;
   Collection<String> tagKeys;
 
+  /**
+   * Construct a new AbstractDynamicGaugeBuilder.
+   *
+   * @param registry To register generated meters.
+   * @param name The meter name, all underlying meters that will be created will share this name.
+   * @param ignored To infer the type of the Gauge.
+   */
   public AbstractDynamicGaugeBuilder(MeterRegistry registry, String name, OfType<E> ignored) {
-    // OfType used to infer the type reference
     this(registry, name);
   }
 
+  /**
+   * Construct a new AbstractDynamicGaugeBuilder.
+   *
+   * @param registry To register generated meters.
+   * @param name The meter name, all underlying meters that will be created will share this name.
+   * @param ignored To infer the type of the Gauge.
+   */
   public AbstractDynamicGaugeBuilder(MeterRegistry registry, String name, Class<E> ignored) {
     // Class used to infer the type reference
     this(registry, name);
@@ -55,7 +75,7 @@ public abstract class AbstractDynamicGaugeBuilder<E, A extends AbstractDynamicGa
     return self();
   }
 
-  public A tagKeys(String @NotNull ... tagKeys) {
+  public A tagKeys(String @NotNull... tagKeys) {
     return tagKeys(Arrays.asList(tagKeys));
   }
 
@@ -66,6 +86,11 @@ public abstract class AbstractDynamicGaugeBuilder<E, A extends AbstractDynamicGa
 
   abstract A self();
 
+  /**
+   * Build a new Dynamic Gauge.
+   *
+   * @return a new Dynamic Gauge.
+   */
   abstract AbstractDynamicGauge<E> build();
 
   protected Function<Builder<E>, Gauge> registrar() {

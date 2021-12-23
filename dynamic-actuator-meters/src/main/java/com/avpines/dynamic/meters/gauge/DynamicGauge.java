@@ -4,6 +4,7 @@ import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.Gauge.Builder;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
+import io.micrometer.core.instrument.Timer;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.function.BiFunction;
@@ -14,7 +15,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * @param <T>
+ * A dynamic gauge, registers underlying {@link Gauge} with dynamic tag values.
+ *
+ * @param <T> The gauge type.
  */
 public class DynamicGauge<T> extends AbstractDynamicGauge<T> {
 
@@ -29,12 +32,15 @@ public class DynamicGauge<T> extends AbstractDynamicGauge<T> {
     super(registry, name, newInnerBuilder, tagger, customizer, registrar, tagKeys);
   }
 
-  public Gauge getOrCreate(T obj, ToDoubleFunction<T> toDouble, String @NotNull ... tagValues) {
+  public Gauge getOrCreate(T obj, ToDoubleFunction<T> toDouble, String @NotNull... tagValues) {
     return super.getOrCreate(new GaugeParams<>(obj, toDouble), tagValues);
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
-  public Optional<Gauge> get(String @NotNull ... tagValues) {
+  public Optional<Gauge> get(String @NotNull... tagValues) {
     return super.get(tagValues);
   }
 

@@ -4,7 +4,7 @@ import com.avpines.dynamic.meters.OfType;
 import io.micrometer.core.instrument.MeterRegistry;
 
 /**
- *
+ * Builder for {@link DynamicGauge} meters.
  */
 public class DynamicGaugeBuilder<E> extends
     AbstractDynamicGaugeBuilder<E, DynamicGaugeBuilder<E>> {
@@ -22,6 +22,9 @@ public class DynamicGaugeBuilder<E> extends
     return this;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public DynamicGauge<E> build() {
     return new DynamicGauge<>(

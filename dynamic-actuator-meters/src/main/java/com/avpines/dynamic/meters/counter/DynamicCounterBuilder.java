@@ -9,9 +9,10 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.function.UnaryOperator;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
- *
+ * Builder for {@link DynamicCounter} meters.
  */
 public class DynamicCounterBuilder {
 
@@ -20,6 +21,12 @@ public class DynamicCounterBuilder {
   Collection<UnaryOperator<Builder>> customizers;
   Collection<String> tagKeys;
 
+  /**
+   * Construct a new DynamicCounterBuilder.
+   *
+   * @param registry To register generated meters.
+   * @param name     The meter name that will be shared among all the underlying meters.
+   */
   public DynamicCounterBuilder(
       MeterRegistry registry,
       String name) {
@@ -46,7 +53,7 @@ public class DynamicCounterBuilder {
     return this;
   }
 
-  public DynamicCounterBuilder tagKeys(String @NotNull ... tagKeys) {
+  public DynamicCounterBuilder tagKeys(String @NotNull... tagKeys) {
     return tagKeys(Arrays.asList(tagKeys));
   }
 
@@ -55,11 +62,16 @@ public class DynamicCounterBuilder {
     return this;
   }
 
+  /**
+   * Build a new {@link DynamicCounter}.
+   *
+   * @return a new DynamicCounter.
+   */
   public DynamicCounter build() {
     return new DynamicCounter(
         registry,
         name,
-        (k, p) -> Counter.builder(k),
+        Counter::builder,
         (b, t) -> t != null ? b.tags(t) : b,
         reduceCustomizers(customizers),
         b -> b.register(registry),
@@ -67,7 +79,7 @@ public class DynamicCounterBuilder {
     );
   }
 
-  private UnaryOperator<Counter.Builder> reduceCustomizers(
+  private @Nullable UnaryOperator<Counter.Builder> reduceCustomizers(
       @NotNull Collection<UnaryOperator<Counter.Builder>> customizers) {
     return customizers.isEmpty()
         ? null

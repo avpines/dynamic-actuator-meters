@@ -7,11 +7,17 @@ import java.util.function.BiFunction;
 import java.util.function.Supplier;
 
 /**
- *
+ * Builder for {@link SupplierDynamicGauge} meters.
  */
 public class SupplierDynamicGaugeBuilder
     extends AbstractDynamicGaugeBuilder<Supplier<Number>, SupplierDynamicGaugeBuilder> {
 
+  /**
+   * Constrcut a new SupplierDynamicGaugeBuilder.
+   *
+   * @param registry To register generated meters.
+   * @param name The meter name that will be shared among all the underlying meters.
+   */
   public SupplierDynamicGaugeBuilder(MeterRegistry registry, String name) {
     super(registry, name);
   }
@@ -22,10 +28,13 @@ public class SupplierDynamicGaugeBuilder
   }
 
   protected BiFunction<String, GaugeParams<Supplier<Number>>, Builder<Supplier<Number>>>
-  innerBuilderCreator() {
+      innerBuilderCreator() {
     return (s, p) -> Gauge.builder(name, p.getObj());
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public SupplierDynamicGauge build() {
     return new SupplierDynamicGauge(

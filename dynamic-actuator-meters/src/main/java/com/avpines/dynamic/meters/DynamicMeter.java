@@ -23,6 +23,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
+ * A dynamic meter, dynamically registers underlying meters with requested tag values.
+ *
  * @param <T> The meter type.
  * @param <E> The builder for the meter [T].
  * @param <R> The additional arguments type ({@link MeterParams}).
@@ -55,7 +57,7 @@ public abstract class DynamicMeter<T extends Meter, E, R extends MeterParams> {
   UnaryOperator<E> customizer;
 
   /**
-   * Registers the meter in the {@link MeterRegistry}
+   * Registers the meter in the {@link MeterRegistry}.
    */
   Function<E, T> registrar;
 
@@ -69,9 +71,14 @@ public abstract class DynamicMeter<T extends Meter, E, R extends MeterParams> {
   /**
    * Construct a new DynamicMeter.
    *
-   * @param name       The name of the counter.
-   * @param registry   Meter registry to register this counter with.
-   * @param customizer Operators to adjust the counter to your liking. Will be run for each name.
+   * @param registry        To register the underlying meters.
+   * @param name            Meter name, all underlying meters will share that name.
+   * @param newInnerBuilder A function to construct the underlying meter builder.
+   * @param tagger          A function to dynamically add the tags.
+   * @param customizer      For any additional customization to the underlying meter.
+   * @param registrar       Function to register the underlying meters.
+   * @param tagKeys         The keys that this meter will have, and allow their values to be added
+   *                        dynamically.
    */
   protected DynamicMeter(
       @NotNull MeterRegistry registry,
@@ -80,7 +87,7 @@ public abstract class DynamicMeter<T extends Meter, E, R extends MeterParams> {
       @NotNull BiFunction<E, Collection<Tag>, E> tagger,
       @Nullable UnaryOperator<E> customizer,
       @NotNull Function<E, T> registrar,
-      String @NotNull ... tagKeys) {
+      String @NotNull... tagKeys) {
     this.registry = registry;
     this.name = name;
     this.newInnerBuilder = newInnerBuilder;
@@ -91,7 +98,7 @@ public abstract class DynamicMeter<T extends Meter, E, R extends MeterParams> {
     this.meters = new HashMap<>();
   }
 
-  protected T getOrCreate(R params, String @NotNull ... tagValues) {
+  protected T getOrCreate(R params, String @NotNull... tagValues) {
     validate(tagValues);
     var key = key(tagValues);
     return meters.computeIfAbsent(key, k -> {
@@ -107,12 +114,18 @@ public abstract class DynamicMeter<T extends Meter, E, R extends MeterParams> {
     });
   }
 
-  protected Optional<T> get(String @NotNull ... tagValues) {
+  /**
+   * Get an existing underlying meter if one is already registered with the given tag values.
+   *
+   * @param tagValues The tag values to check if a meter exists for.
+   * @return the meter, if one was found.
+   */
+  protected Optional<T> get(String @NotNull... tagValues) {
     validate(tagValues);
     return Optional.ofNullable(meters.get(key(tagValues)));
   }
 
-  private void validate(String @NotNull ... tagValues) {
+  private void validate(String @NotNull... tagValues) {
     if (tagValues.length != tagKeys.length) {
       throw new IllegalArgumentException(
           String.format("Expected '%d' values, got '%d'. Keys: '%s'",
@@ -120,7 +133,7 @@ public abstract class DynamicMeter<T extends Meter, E, R extends MeterParams> {
     }
   }
 
-  private String key(String ... tagValues) {
+  private @NotNull String key(String... tagValues) {
     return Arrays.toString(tagValues);
   }
 

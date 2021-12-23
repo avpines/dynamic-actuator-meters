@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- *
+ * Builder for {@link DynamicTimer} meters.
  */
 public class DynamicTimerBuilder {
 
@@ -20,6 +20,12 @@ public class DynamicTimerBuilder {
   Collection<UnaryOperator<Builder>> customizers;
   Collection<String> tagKeys;
 
+  /**
+   * Construct a new DynamicTimerBuilder.
+   *
+   * @param registry To register the underlying meters.
+   * @param name     Meter name, all underlying meters will share that name.
+   */
   public DynamicTimerBuilder(
       MeterRegistry registry,
       String name) {
@@ -45,7 +51,7 @@ public class DynamicTimerBuilder {
     return this;
   }
 
-  public DynamicTimerBuilder tagKeys(String @NotNull ... tagKeys) {
+  public DynamicTimerBuilder tagKeys(String @NotNull... tagKeys) {
     return tagKeys(Arrays.asList(tagKeys));
   }
 
@@ -54,12 +60,17 @@ public class DynamicTimerBuilder {
     return this;
   }
 
+  /**
+   * Build a new {@link DynamicTimer}.
+   *
+   * @return a new DynamicTimer.
+   */
   public DynamicTimer build() {
     return new DynamicTimer(
         registry,
         name,
-        (k, p) -> Timer.builder(k),
-        (b, t) -> b != null ? b.tags(t) : b,
+        Timer::builder,
+        (b, t) -> t != null ? b.tags(t) : b,
         reduceCustomizers(customizers),
         b -> b.register(registry),
         tagKeys.toArray(new String[0])
