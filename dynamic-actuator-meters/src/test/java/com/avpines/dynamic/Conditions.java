@@ -6,7 +6,6 @@ import java.util.Arrays;
 import java.util.List;
 import lombok.EqualsAndHashCode;
 import org.assertj.core.api.Condition;
-import org.jetbrains.annotations.NotNull;
 
 public class Conditions {
 

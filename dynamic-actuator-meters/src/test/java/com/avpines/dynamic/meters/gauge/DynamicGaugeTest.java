@@ -3,9 +3,8 @@ package com.avpines.dynamic.meters.gauge;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
-import com.avpines.dynamic.meters.OfType;
-import com.avpines.dynamic.meters.gauge.DynamicGauge;
 import com.avpines.dynamic.Conditions;
+import com.avpines.dynamic.meters.OfType;
 import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.Meter;
 import io.micrometer.core.instrument.Tag;
@@ -32,7 +31,7 @@ class DynamicGaugeTest {
     smr = new SimpleMeterRegistry();
   }
 
-    @Test
+  @Test
   void noOperatorsNoTags() {
     String name = "my.metric";
     DynamicGauge<List<String>> dg = DynamicGauge
@@ -63,7 +62,7 @@ class DynamicGaugeTest {
     dg.getOrCreate(list, l -> l.stream().filter(s -> between(s, 4, 6)).count(), "min-1", "max-3");
     dg.getOrCreate(list, l -> l.stream().filter(s -> between(s, 5, 7)).count(), "min-2", "max-4");
     dg.getOrCreate(list, l -> l.stream().filter(s -> between(s, 6, 8)).count(), "min-3", "max-5");
-    list.addAll(Arrays.asList("a", "as", "who", "why", "why?", "what", "when", "where", "a thesaurus"));
+    list.addAll(Arrays.asList("a", "as", "who", "why", "why?", "what", "when", "where", "wonders"));
     List<Meter> meters = smr.getMeters();
     assertThat(meters).hasSize(3);
     assertThat(meters).filteredOn(m -> m.getId().getName().equals(name)).hasSize(3);
@@ -105,7 +104,7 @@ class DynamicGaugeTest {
     Set<Double> set = new HashSet<>();
     dg.getOrCreate(set,s -> s.stream().filter(d -> d > 10.0).count(), "gt10");
     dg.getOrCreate(set,s -> s.stream().filter(d -> d < 10.0).count(), "lt10");
-    set.addAll(Arrays.asList(1.0, 2.0, 9.9999, 10.0 ,10.0, 10.001, 11.0, 12.0, 1.0, 2.0, 3.0));
+    set.addAll(Arrays.asList(1.0, 2.0, 9.9999, 10.0, 10.0, 10.001, 11.0, 12.0, 1.0, 2.0, 3.0));
     List<Meter> meters = smr.getMeters();
     assertThat(meters).hasSize(2);
     assertThat(meters).filteredOn(m -> m.getId().getName().equals(name)).hasSize(2);

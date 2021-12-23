@@ -65,7 +65,9 @@ class DynamicCounterTest {
   void withOperatorNoTags() {
     String name = "our.metric";
     String desc = "my very informative and interesting description";
-    DynamicCounter c = DynamicCounter.builder(smr, name).customizer(b -> b.baseUnit("boatloads").description(desc)).build();
+    DynamicCounter c = DynamicCounter.builder(smr, name)
+        .customizer(b -> b.baseUnit("boatloads").description(desc))
+        .build();
     c.getOrCreate().increment(5);
     List<Meter> meters = smr.getMeters();
     assertThat(meters).hasSize(1);

@@ -46,10 +46,18 @@ class DynamicTimerTest {
     List<Meter> meters = smr.getMeters();
     assertThat(meters).hasSize(4);
     assertThat(meters).filteredOn(m -> m.getId().getName().equals(name)).hasSize(4);
-    assertUniqueTagCombination(meters, Tag.of("tag-1", "tag-1-v-1"), Tag.of("tag-2", "tag-2-v-1"));
-    assertUniqueTagCombination(meters, Tag.of("tag-1", "tag-1-v-1"), Tag.of("tag-2", "tag-2-v-2"));
-    assertUniqueTagCombination(meters, Tag.of("tag-1", "tag-1-v-2"), Tag.of("tag-2", "tag-2-v-1"));
-    assertUniqueTagCombination(meters, Tag.of("tag-1", "tag-1-v-2"), Tag.of("tag-2", "tag-2-v-2"));
+    assertThat(meters)
+        .filteredOn(Conditions.onTags(Tag.of("tag-1", "tag-1-v-1"), Tag.of("tag-2", "tag-2-v-1")))
+        .hasSize(1);
+    assertThat(meters)
+        .filteredOn(Conditions.onTags(Tag.of("tag-1", "tag-1-v-1"), Tag.of("tag-2", "tag-2-v-2")))
+        .hasSize(1);
+    assertThat(meters)
+        .filteredOn(Conditions.onTags(Tag.of("tag-1", "tag-1-v-2"), Tag.of("tag-2", "tag-2-v-1")))
+        .hasSize(1);
+    assertThat(meters)
+        .filteredOn(Conditions.onTags(Tag.of("tag-1", "tag-1-v-2"), Tag.of("tag-2", "tag-2-v-2")))
+        .hasSize(1);
   }
 
   @Test
@@ -78,8 +86,12 @@ class DynamicTimerTest {
     assertThat(meters).hasSize(2);
     assertThat(meters).filteredOn(m -> m.getId().getName().equals(name)).hasSize(2);
     // tags added from the customizer will come before the explicitly set tags.
-    assertUniqueTagCombination(meters, Tag.of("tag-1", "tag-1-val-1"), Tag.of("another", "one"));
-    assertUniqueTagCombination(meters, Tag.of("tag-1", "tag-1-val-2"), Tag.of("another", "one"));
+    assertThat(meters)
+        .filteredOn(Conditions.onTags(Tag.of("tag-1", "tag-1-val-1"), Tag.of("another", "one")))
+        .hasSize(1);
+    assertThat(meters)
+        .filteredOn(Conditions.onTags(Tag.of("tag-1", "tag-1-val-2"), Tag.of("another", "one")))
+        .hasSize(1);
   }
 
   @Test
@@ -97,10 +109,6 @@ class DynamicTimerTest {
             .tagKeys("tag-1", "tag-2")
             .build().getOrCreate()
     ).isInstanceOf(IllegalArgumentException.class);
-  }
-
-  private void assertUniqueTagCombination(List<Meter> meters, Tag... tags) {
-    assertThat(meters).filteredOn(Conditions.onTags(tags)).hasSize(1);
   }
 
 }

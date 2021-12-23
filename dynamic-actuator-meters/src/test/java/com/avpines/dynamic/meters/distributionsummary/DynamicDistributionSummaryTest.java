@@ -36,7 +36,9 @@ class DynamicDistributionSummaryTest {
   @Test
   public void noOperatorsWithTags() {
     String name = "your.metric";
-    DynamicDistributionSummary tt = DynamicDistributionSummary.builder(smr, name).tagKeys("t1", "t2").build();
+    DynamicDistributionSummary tt = DynamicDistributionSummary.builder(smr, name)
+        .tagKeys("t1", "t2")
+        .build();
     tt.getOrCreate("t1-v1", "t2-v1").record(5);
     tt.getOrCreate("t1-v1", "t2-v2").record(10);
     tt.getOrCreate("t1-v2", "t2-v1").record(20);

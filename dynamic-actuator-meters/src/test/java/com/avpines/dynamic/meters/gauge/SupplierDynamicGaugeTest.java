@@ -3,8 +3,6 @@ package com.avpines.dynamic.meters.gauge;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
-import com.avpines.dynamic.meters.gauge.DynamicGauge;
-import com.avpines.dynamic.meters.gauge.SupplierDynamicGauge;
 import com.avpines.dynamic.Conditions;
 import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.Meter;
@@ -34,13 +32,12 @@ class SupplierDynamicGaugeTest {
   @Test
   void noOperatorsNoTags() {
     String name = "my.metric";
+    AtomicLong num = new AtomicLong(233);
     SupplierDynamicGauge dg = SupplierDynamicGauge
         .builder(smr, name)
         .build();
-    AtomicLong num = new AtomicLong();
     Gauge g = dg.getOrCreate(num::get);
     List<Meter> meters = smr.getMeters();
-    num.set(233);
     assertThat(meters).hasSize(1);
     assertThat(meters).filteredOn(m -> m.getId().getName().equals(name)).hasSize(1);
     assertThat(meters).flatExtracting(m -> m.getId().getTags()).isEmpty();
@@ -137,7 +134,6 @@ class SupplierDynamicGaugeTest {
         .tagKey("t1")
         .customizer(b -> b.tag("another", "one"))
         .build();
-    Set<Double> set = new HashSet<>();
     Gauge g = dg.getOrCreate(al::get, "gt10");
     Optional<Gauge> og = dg.get("gt10");
     assertThat(og).isPresent().contains(g);
@@ -145,7 +141,7 @@ class SupplierDynamicGaugeTest {
 
   @Test
   void getGaugeNotExist() {
-    SupplierDynamicGauge dg = SupplierDynamicGauge.builder(smr, "hello")
+    SupplierDynamicGauge dg = DynamicGauge.builder(smr, "hello")
         .tagKey("t1")
         .customizer(b -> b.tag("another", "one"))
         .build();
