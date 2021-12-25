@@ -1,7 +1,6 @@
 package com.avpines.dynamic.meters.gauge;
 
 import com.avpines.dynamic.meters.OfType;
-import com.avpines.dynamic.meters.distributionsummary.DynamicDistributionSummary;
 import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.Gauge.Builder;
 import io.micrometer.core.instrument.MeterRegistry;
@@ -13,7 +12,6 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * Common parent class for all Gauge builders.
@@ -106,13 +104,6 @@ public abstract class AbstractDynamicGaugeBuilder<E, A extends AbstractDynamicGa
       assert p.getToDouble() != null;
       return Gauge.builder(name, p.getObj(), p.getToDouble());
     };
-  }
-
-  protected @Nullable UnaryOperator<Gauge.Builder<E>> reduceCustomizers(
-      @NotNull Collection<UnaryOperator<Gauge.Builder<E>>> customizers) {
-    return customizers.isEmpty()
-        ? null
-        : customizers.stream().reduce((l, r) -> b -> l.andThen(r).apply(b)).orElse(null);
   }
 
 }

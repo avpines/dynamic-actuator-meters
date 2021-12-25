@@ -4,7 +4,6 @@ import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.Gauge.Builder;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
-import io.micrometer.core.instrument.Timer;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.function.BiFunction;
@@ -26,10 +25,10 @@ public class DynamicGauge<T> extends AbstractDynamicGauge<T> {
       @NotNull String name,
       @NotNull BiFunction<String, GaugeParams<T>, Builder<T>> newInnerBuilder,
       @NotNull BiFunction<Builder<T>, Collection<Tag>, Builder<T>> tagger,
-      @Nullable UnaryOperator<Builder<T>> customizer,
+      @Nullable Collection<UnaryOperator<Builder<T>>> customizers,
       @NotNull Function<Builder<T>, Gauge> registrar,
       String... tagKeys) {
-    super(registry, name, newInnerBuilder, tagger, customizer, registrar, tagKeys);
+    super(registry, name, newInnerBuilder, tagger, customizers, registrar, tagKeys);
   }
 
   public Gauge getOrCreate(T obj, ToDoubleFunction<T> toDouble, String @NotNull... tagValues) {

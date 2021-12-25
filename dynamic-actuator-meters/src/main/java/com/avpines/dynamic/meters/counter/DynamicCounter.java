@@ -28,7 +28,7 @@ public class DynamicCounter extends ParameterlessDynamicMeter<Counter, Builder> 
    * @param name            Meter name, all underlying meters will share that name.
    * @param newInnerBuilder A function to construct the underlying meter builder.
    * @param tagger          A function to dynamically add the tags.
-   * @param customizer      For any additional customization to the underlying meter.
+   * @param customizers     For any additional customization to the underlying meter.
    * @param registrar       Function to register the underlying meters.
    * @param tagKeys         The keys that this meter will have, and allow their values to be added
    *                        dynamically.
@@ -37,11 +37,11 @@ public class DynamicCounter extends ParameterlessDynamicMeter<Counter, Builder> 
       @NotNull MeterRegistry registry,
       @NotNull String name,
       @NotNull Function<String, Builder> newInnerBuilder,
-      @NotNull BiFunction<Counter.Builder, Collection<Tag>, Counter.Builder> tagger,
-      @Nullable UnaryOperator<Builder> customizer,
+      @NotNull BiFunction<Builder, Collection<Tag>, Counter.Builder> tagger,
+      @Nullable Collection<UnaryOperator<Builder>> customizers,
       @NotNull Function<Builder, Counter> registrar,
       String @NotNull... tagKeys) {
-    super(registry, name, newInnerBuilder, tagger, customizer, registrar, tagKeys);
+    super(registry, name, newInnerBuilder, tagger, customizers, registrar, tagKeys);
   }
 
 }

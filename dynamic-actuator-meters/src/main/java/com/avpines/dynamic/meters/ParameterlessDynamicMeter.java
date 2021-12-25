@@ -25,7 +25,7 @@ public class ParameterlessDynamicMeter<T extends Meter, E> extends DynamicMeter<
    * @param name            Meter name, all underlying meters will share that name.
    * @param newInnerBuilder A function to construct the underlying meter builder.
    * @param tagger          A function to dynamically add the tags.
-   * @param customizer      For any additional customization to the underlying meter.
+   * @param customizers     For any additional customization to the underlying meter.
    * @param registrar       Function to register the underlying meters.
    * @param tagKeys         The keys that this meter will have, and allow their values to be added
    *                        dynamically.
@@ -35,11 +35,11 @@ public class ParameterlessDynamicMeter<T extends Meter, E> extends DynamicMeter<
       @NotNull String name,
       @NotNull Function<String, E> newInnerBuilder,
       @NotNull BiFunction<E, Collection<Tag>, E> tagger,
-      @Nullable UnaryOperator<E> customizer,
+      @Nullable Collection<UnaryOperator<E>> customizers,
       @NotNull Function<E, T> registrar,
       String @NotNull... tagKeys) {
     super(
-        registry, name, (s, p) -> newInnerBuilder.apply(s), tagger, customizer, registrar, tagKeys
+        registry, name, (s, p) -> newInnerBuilder.apply(s), tagger, customizers, registrar, tagKeys
     );
   }
 

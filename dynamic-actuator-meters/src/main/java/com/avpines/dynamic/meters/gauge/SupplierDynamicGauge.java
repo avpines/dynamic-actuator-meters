@@ -32,10 +32,10 @@ public class SupplierDynamicGauge extends AbstractDynamicGauge<Supplier<Number>>
           Supplier<Number>>,
           Collection<Tag>,
           Builder<Supplier<Number>>> tagger,
-      @Nullable UnaryOperator<Builder<Supplier<Number>>> customizer,
+      @Nullable Collection<UnaryOperator<Builder<Supplier<Number>>>> customizers,
       @NotNull Function<Builder<Supplier<Number>>, Gauge> registrar,
       String... tagKeys) {
-    super(registry, name, newInnerBuilder, tagger, customizer, registrar, tagKeys);
+    super(registry, name, newInnerBuilder, tagger, customizers, registrar, tagKeys);
   }
 
   /**

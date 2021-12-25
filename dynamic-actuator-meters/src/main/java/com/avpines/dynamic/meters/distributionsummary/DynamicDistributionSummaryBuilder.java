@@ -1,6 +1,5 @@
 package com.avpines.dynamic.meters.distributionsummary;
 
-import com.avpines.dynamic.meters.counter.DynamicCounter;
 import io.micrometer.core.instrument.DistributionSummary;
 import io.micrometer.core.instrument.DistributionSummary.Builder;
 import io.micrometer.core.instrument.MeterRegistry;
@@ -9,7 +8,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.function.UnaryOperator;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * Builder for {@link DynamicDistributionSummary} meters.
@@ -73,16 +71,10 @@ public class DynamicDistributionSummaryBuilder {
         name,
         DistributionSummary::builder,
         (b, t) -> t != null ? b.tags(t) : b,
-        reduceCustomizers(customizers),
+        customizers,
         b -> b.register(registry),
         tagKeys.toArray(new String[0])
     );
   }
 
-  private @Nullable UnaryOperator<DistributionSummary.Builder> reduceCustomizers(
-      @NotNull Collection<UnaryOperator<DistributionSummary.Builder>> customizers) {
-    return customizers.isEmpty()
-        ? null
-        : customizers.stream().reduce((l, r) -> b -> l.andThen(r).apply(b)).orElse(null);
-  }
 }

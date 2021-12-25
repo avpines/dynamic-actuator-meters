@@ -32,7 +32,7 @@ public class DynamicGaugeBuilder<E> extends
         name,
         innerBuilderCreator(),
         tagger(),
-        reduceCustomizers(customizers),
+        customizers,
         registrar(),
         tagKeys.toArray(new String[0])
     );

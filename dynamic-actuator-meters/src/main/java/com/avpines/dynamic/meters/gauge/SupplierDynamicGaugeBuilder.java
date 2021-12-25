@@ -42,7 +42,7 @@ public class SupplierDynamicGaugeBuilder
         name,
         innerBuilderCreator(),
         tagger(),
-        reduceCustomizers(customizers),
+        customizers,
         registrar(),
         tagKeys.toArray(new String[0])
     );

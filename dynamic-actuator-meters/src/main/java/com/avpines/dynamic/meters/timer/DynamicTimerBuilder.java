@@ -8,7 +8,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.function.UnaryOperator;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * Builder for {@link DynamicTimer} meters.
@@ -71,17 +70,10 @@ public class DynamicTimerBuilder {
         name,
         Timer::builder,
         (b, t) -> t != null ? b.tags(t) : b,
-        reduceCustomizers(customizers),
+        customizers,
         b -> b.register(registry),
         tagKeys.toArray(new String[0])
     );
-  }
-
-  private @Nullable UnaryOperator<Timer.Builder> reduceCustomizers(
-      @NotNull Collection<UnaryOperator<Timer.Builder>> customizers) {
-    return customizers.isEmpty()
-        ? null
-        : customizers.stream().reduce((l, r) -> b -> l.andThen(r).apply(b)).orElse(null);
   }
 
 }

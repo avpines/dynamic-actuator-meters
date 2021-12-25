@@ -75,7 +75,7 @@ public abstract class DynamicMeter<T extends Meter, E, R extends MeterParams> {
    * @param name            Meter name, all underlying meters will share that name.
    * @param newInnerBuilder A function to construct the underlying meter builder.
    * @param tagger          A function to dynamically add the tags.
-   * @param customizer      For any additional customization to the underlying meter.
+   * @param customizers     For any additional customization to the underlying meter.
    * @param registrar       Function to register the underlying meters.
    * @param tagKeys         The keys that this meter will have, and allow their values to be added
    *                        dynamically.
@@ -85,14 +85,14 @@ public abstract class DynamicMeter<T extends Meter, E, R extends MeterParams> {
       @NotNull String name,
       @NotNull BiFunction<String, R, E> newInnerBuilder,
       @NotNull BiFunction<E, Collection<Tag>, E> tagger,
-      @Nullable UnaryOperator<E> customizer,
+      @Nullable Collection<UnaryOperator<E>> customizers,
       @NotNull Function<E, T> registrar,
       String @NotNull... tagKeys) {
     this.registry = registry;
     this.name = name;
     this.newInnerBuilder = newInnerBuilder;
     this.tagger = tagger;
-    this.customizer = customizer;
+    this.customizer = reduceCustomizers(customizers);
     this.registrar = registrar;
     this.tagKeys = tagKeys;
     this.meters = new HashMap<>();
@@ -135,6 +135,13 @@ public abstract class DynamicMeter<T extends Meter, E, R extends MeterParams> {
 
   private @NotNull String key(String... tagValues) {
     return Arrays.toString(tagValues);
+  }
+
+  private @Nullable UnaryOperator<E> reduceCustomizers(
+      @Nullable Collection<UnaryOperator<E>> customizers) {
+    return customizers == null || customizers.isEmpty()
+        ? null
+        : customizers.stream().reduce((l, r) -> b -> l.andThen(r).apply(b)).orElse(null);
   }
 
 }
