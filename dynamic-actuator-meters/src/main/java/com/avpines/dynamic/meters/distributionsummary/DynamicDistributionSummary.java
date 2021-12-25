@@ -46,11 +46,4 @@ public class DynamicDistributionSummary
     super(registry, name, newInnerBuilder, tagger, customizer, registrar, tagKeys);
   }
 
-  /**
-   * {@inheritDoc}
-   */
-  public DistributionSummary getOrCreate(String @NotNull... tagValues) {
-    return super.getOrCreate(null, tagValues);
-  }
-
 }

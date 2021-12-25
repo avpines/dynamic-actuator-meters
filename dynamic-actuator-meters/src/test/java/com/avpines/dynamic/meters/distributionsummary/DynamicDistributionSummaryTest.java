@@ -23,8 +23,8 @@ class DynamicDistributionSummaryTest {
   @Test
   void noOperatorsNoTags() {
     String name = "my.metric";
-    DynamicDistributionSummary tt = DynamicDistributionSummary.builder(smr, name).build();
-    tt.getOrCreate().record(5);
+    DynamicDistributionSummary dds = DynamicDistributionSummary.builder(smr, name).build();
+    dds.getOrCreate().record(5);
     List<Meter> meters = smr.getMeters();
     assertThat(meters).hasSize(1);
     assertThat(meters).filteredOn(m -> m.getId().getName().equals(name)).hasSize(1);
@@ -36,16 +36,16 @@ class DynamicDistributionSummaryTest {
   @Test
   public void noOperatorsWithTags() {
     String name = "your.metric";
-    DynamicDistributionSummary tt = DynamicDistributionSummary.builder(smr, name)
+    DynamicDistributionSummary dds = DynamicDistributionSummary.builder(smr, name)
         .tagKeys("t1", "t2")
         .build();
-    tt.getOrCreate("t1-v1", "t2-v1").record(5);
-    tt.getOrCreate("t1-v1", "t2-v2").record(10);
-    tt.getOrCreate("t1-v2", "t2-v1").record(20);
-    tt.getOrCreate("t1-v2", "t2-v2").record(120);
-    tt.getOrCreate("t1-v1", "t2-v1").record(60);
-    tt.getOrCreate("t1-v1", "t2-v2").record(5);
-    tt.getOrCreate("t1-v2", "t2-v1").record(15);
+    dds.getOrCreate("t1-v1", "t2-v1").record(5);
+    dds.getOrCreate("t1-v1", "t2-v2").record(10);
+    dds.getOrCreate("t1-v2", "t2-v1").record(20);
+    dds.getOrCreate("t1-v2", "t2-v2").record(120);
+    dds.getOrCreate("t1-v1", "t2-v1").record(60);
+    dds.getOrCreate("t1-v1", "t2-v2").record(5);
+    dds.getOrCreate("t1-v2", "t2-v1").record(15);
     List<Meter> meters = smr.getMeters();
     assertThat(meters).hasSize(4);
     assertThat(meters).filteredOn(m -> m.getId().getName().equals(name)).hasSize(4);
@@ -67,10 +67,10 @@ class DynamicDistributionSummaryTest {
   void withOperatorNoTags() {
     String name = "our.metric";
     String desc = "my very informative and interesting description";
-    DynamicDistributionSummary tt = DynamicDistributionSummary
+    DynamicDistributionSummary dds = DynamicDistributionSummary
         .builder(smr, name).customizer(b -> b.description(desc)).build();
-    tt.getOrCreate().record(5);
-    tt.getOrCreate().record(1);
+    dds.getOrCreate().record(5);
+    dds.getOrCreate().record(1);
     List<Meter> meters = smr.getMeters();
     assertThat(meters).hasSize(1);
     assertThat(meters).filteredOn(m -> m.getId().getName().equals(name)).hasSize(1);
@@ -83,12 +83,12 @@ class DynamicDistributionSummaryTest {
   @Test
   void withOperatorWithTags() {
     String name = "our.metric";
-    DynamicDistributionSummary tt = DynamicDistributionSummary.builder(smr, name)
+    DynamicDistributionSummary dds = DynamicDistributionSummary.builder(smr, name)
         .customizer(b -> b.tag("another", "one"))
         .tagKeys("t1")
         .build();
-    tt.getOrCreate("t1-v1").record(2);
-    tt.getOrCreate("t1-v2").record(1);
+    dds.getOrCreate("t1-v1").record(2);
+    dds.getOrCreate("t1-v2").record(1);
     List<Meter> meters = smr.getMeters();
     assertThat(meters).hasSize(2);
     assertThat(meters).filteredOn(m -> m.getId().getName().equals(name)).hasSize(2);

@@ -44,11 +44,4 @@ public class DynamicCounter extends ParameterlessDynamicMeter<Counter, Builder> 
     super(registry, name, newInnerBuilder, tagger, customizer, registrar, tagKeys);
   }
 
-  /**
-   * {@inheritDoc}
-   */
-  public Counter getOrCreate(String @NotNull... tagValues) {
-    return super.getOrCreate(null, tagValues);
-  }
-
 }
