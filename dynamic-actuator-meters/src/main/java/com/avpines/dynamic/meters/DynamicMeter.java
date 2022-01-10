@@ -10,6 +10,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
@@ -66,7 +68,7 @@ public abstract class DynamicMeter<T extends Meter, E, R extends MeterParams> {
    */
   String[] tagKeys;
 
-  Map<String, T> meters;
+  ConcurrentMap<String, T> meters;
 
   /**
    * Construct a new DynamicMeter.
@@ -95,7 +97,7 @@ public abstract class DynamicMeter<T extends Meter, E, R extends MeterParams> {
     this.customizer = reduceCustomizers(customizers);
     this.registrar = registrar;
     this.tagKeys = tagKeys;
-    this.meters = new HashMap<>();
+    this.meters = new ConcurrentHashMap<>();
   }
 
   protected T getOrCreate(R params, String @NotNull... tagValues) {
