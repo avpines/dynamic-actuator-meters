@@ -16,8 +16,8 @@
   <properties>
     <java.version>11</java.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <spring-boot.version>2.6.1</spring-boot.version>
-    <jetbrains.annotations.version>22.0.0</jetbrains.annotations.version>
+    <spring-boot.version>2.6.6</spring-boot.version>
+    <jetbrains.annotations.version>23.0.0</jetbrains.annotations.version>
     <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
     <maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
     <maven.checkstyle-plugin.version>3.1.2</maven.checkstyle-plugin.version>
